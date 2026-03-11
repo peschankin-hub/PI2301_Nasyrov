@@ -1,26 +1,17 @@
-# 🧪 Лабораторные работы
+# lab_1
 
-Добро пожаловать в мой репозиторий с учебными проектами!
+A new Flutter project.
 
----
+## Getting Started
 
-## ⚠️ Внимание: Пустая ветка
-Вы находитесь в ветке `main`. Она намеренно оставлена **пустой** и служит лишь входной точкой для навигации. 
+This project is a starting point for a Flutter application.
 
-### 📂 Как найти материалы?
-Все выполненные работы распределены по **отдельным веткам**. Чтобы посмотреть код, переключитесь на нужную ветку в интерфейсе GitHub или через терминал.
+A few resources to get you started if this is your first Flutter project:
 
-### 🛠 Навигация (Git CLI)
-Если вы клонировали репозиторий локально, используйте следующие команды:
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-* **Посмотреть все доступные ветки:**
-    ```bash
-    git branch -a
-    ```
-* **Переключиться на нужную лабу:**
-    ```bash
-    git checkout <название_ветки>
-    ```
-
----
-*Выполнил Насыров Артем ПИ2301*
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
