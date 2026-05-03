@@ -9,6 +9,7 @@ class InfinityList extends StatelessWidget {
       appBar: AppBar(title: const Text('Бесконечный список')),
       body: ListView.builder(
         itemBuilder: (context, index) {
+          print('Создан элемент $index');
           return ListTile(title: Text('строка $index'));
         },
       ),

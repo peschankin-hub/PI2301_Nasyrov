@@ -11,6 +11,7 @@ class InfinityMathList extends StatelessWidget {
       body: ListView.builder(
         itemBuilder: (context, index) {
           final result = pow(2, index);
+          print('Создан элемент $index, результат: $result');
           return ListTile(title: Text('2 ^ $index = $result'));
         },
       ),
