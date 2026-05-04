@@ -43,6 +43,20 @@ class _AreaCalculatorState extends State<AreaCalculator> {
       return;
     }
 
+    if (w <= 0 || h <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Значения должны быть больше нуля')),
+      );
+      return;
+    }
+
+    if (w > 1000000 || h > 1000000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Значения слишком большие!')),
+      );
+      return;
+    }
+
     setState(() {
       _width = w;
       _height = h;
