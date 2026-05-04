@@ -23,50 +23,76 @@ class _AreaCalculatorState extends State<AreaCalculator> {
   }
 
   void _calculateArea() {
-    final w = double.tryParse(_widthController.text) ?? 0.0;
-    final h = double.tryParse(_heightController.text) ?? 0.0;
+    final widthText = _widthController.text;
+    final heightText = _heightController.text;
+
+    if (widthText.isEmpty || heightText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Пожалуйста, заполните все поля')),
+      );
+      return;
+    }
+
+    final w = double.tryParse(widthText);
+    final h = double.tryParse(heightText);
+
+    if (w == null || h == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Введите корректные числовые значения')),
+      );
+      return;
+    }
+
     setState(() {
       _width = w;
       _height = h;
       _result = w * h;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Вычисление выполнено успешно')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextField(
-            controller: _widthController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Ширина',
-              border: OutlineInputBorder(),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Калькулятор площади')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _widthController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Ширина',
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _heightController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Высота',
-              border: OutlineInputBorder(),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _heightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Высота',
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _calculateArea,
-            child: const Text('Вычислить'),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Площадь: $_result',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ],
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _calculateArea,
+              child: const Text('Вычислить'),
+            ),
+            const SizedBox(height: 24),
+            if (_result > 0 || (_width > 0 && _height > 0))
+              Text(
+                'S = $_width * $_height = $_result',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+          ],
+        ),
       ),
     );
   }
