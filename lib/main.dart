@@ -14,10 +14,7 @@ class CoffeeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Кофемашина',
-      theme: ThemeData(
-        primarySwatch: Colors.brown,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.brown, useMaterial3: true),
       home: const CoffeeMachinePage(),
     );
   }
@@ -38,18 +35,19 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
   void initState() {
     super.initState();
     machine = Machine(
-      Resources(
-        coffeBeans: 150,
-        milk: 150,
-        water: 300,
-        cash: 0,
-      ),
+      Resources(coffeBeans: 150, milk: 150, water: 300, cash: 0),
     );
   }
 
-  void _buyCoffee(CoffeeType type) {
+  void _buyCoffee(CoffeeType type) async {
     setState(() {
-      statusMessage = machine.makeCoffeeByType(type);
+      statusMessage = "Приготовление... Пожалуйста, подождите.";
+    });
+
+    String result = await machine.makeCoffeeByType(type);
+
+    setState(() {
+      statusMessage = result;
     });
   }
 
@@ -79,7 +77,7 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Кофемашина - Лаб 9'),
+        title: const Text('Кофемашина - Лаб 11'),
         backgroundColor: Colors.brown[300],
       ),
       body: Padding(
@@ -92,27 +90,47 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    const Text('СОСТОЯНИЕ РЕСУРСОВ', 
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'СОСТОЯНИЕ РЕСУРСОВ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const Divider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _statusItem("Кофе", "${machine.resources.coffeBeans}г", Icons.grain),
-                        _statusItem("Вода", "${machine.resources.water}мл", Icons.water_drop),
-                        _statusItem("Молоко", "${machine.resources.milk}мл", Icons.coffee_maker),
+                        _statusItem(
+                          "Кофе",
+                          "${machine.resources.coffeBeans}г",
+                          Icons.grain,
+                        ),
+                        _statusItem(
+                          "Вода",
+                          "${machine.resources.water}мл",
+                          Icons.water_drop,
+                        ),
+                        _statusItem(
+                          "Молоко",
+                          "${machine.resources.milk}мл",
+                          Icons.coffee_maker,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text('Деньги: ${machine.resources.cash} руб.', 
-                      style: const TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold)),
+                    Text(
+                      'Деньги: ${machine.resources.cash} руб.',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -122,7 +140,11 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
               child: Text(
                 statusMessage,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.greenAccent, fontSize: 16, fontFamily: 'monospace'),
+                style: const TextStyle(
+                  color: Colors.greenAccent,
+                  fontSize: 16,
+                  fontFamily: 'monospace',
+                ),
               ),
             ),
 
@@ -132,11 +154,29 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
 
             Row(
               children: [
-                Expanded(child: _coffeeButton("Эспрессо", "50р", () => _buyCoffee(CoffeeType.espresso))),
+                Expanded(
+                  child: _coffeeButton(
+                    "Эспрессо",
+                    "50р",
+                    () => _buyCoffee(CoffeeType.espresso),
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Expanded(child: _coffeeButton("Капучино", "80р", () => _buyCoffee(CoffeeType.cappuccino))),
+                Expanded(
+                  child: _coffeeButton(
+                    "Капучино",
+                    "80р",
+                    () => _buyCoffee(CoffeeType.cappuccino),
+                  ),
+                ),
                 const SizedBox(width: 8),
-                Expanded(child: _coffeeButton("Американо", "60р", () => _buyCoffee(CoffeeType.americano))),
+                Expanded(
+                  child: _coffeeButton(
+                    "Американо",
+                    "60р",
+                    () => _buyCoffee(CoffeeType.americano),
+                  ),
+                ),
               ],
             ),
 
@@ -145,11 +185,13 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
               onPressed: _addMoney,
               icon: const Icon(Icons.attach_money),
               label: const Text('Внести 100 руб.'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green[50]),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[50],
+              ),
             ),
 
             const Spacer(),
-            
+
             Row(
               children: [
                 Expanded(
@@ -179,7 +221,10 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
     return Column(
       children: [
         Icon(icon, color: Colors.brown),
-        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
@@ -195,7 +240,10 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
       child: Column(
         children: [
           Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(price, style: const TextStyle(fontSize: 12, color: Colors.brown)),
+          Text(
+            price,
+            style: const TextStyle(fontSize: 12, color: Colors.brown),
+          ),
         ],
       ),
     );

@@ -16,7 +16,7 @@ class Machine {
     return 1;
   }
 
-  String makeCoffeeByType(CoffeeType type) {
+  Future<String> makeCoffeeByType(CoffeeType type) async {
     ICoffee coffee;
     String coffeeName;
     switch (type) {
@@ -35,7 +35,8 @@ class Machine {
     }
 
     if (isAvailableResources(coffee)) {
-      _makeCoffee(coffee);
+      _consumeResources(coffee);
+      await coffee.prepare();
       return "Ваш $coffeeName готов!";
     } else {
       String error = "Недостаточно ресурсов для $coffeeName:";
@@ -54,7 +55,7 @@ class Machine {
         _resources.cash >= coffee.cash();
   }
 
-  void _makeCoffee(ICoffee coffee) {
+  void _consumeResources(ICoffee coffee) {
     _resources.coffeBeans -= coffee.coffeBeans();
     _resources.milk -= coffee.milk();
     _resources.water -= coffee.water();

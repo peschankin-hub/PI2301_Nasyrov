@@ -3,4 +3,5 @@ abstract class ICoffee {
   num milk();
   num water();
   num cash();
+  Future<void> prepare();
 }
