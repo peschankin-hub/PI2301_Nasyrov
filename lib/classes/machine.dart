@@ -14,7 +14,6 @@ class Machine {
         _water = water,
         _cash = cash;
 
-  // 4. Геттеры и сеттеры
   int get coffeeBeans => _coffeeBeans;
   set coffeeBeans(int value) => _coffeeBeans = value;
 
@@ -27,20 +26,16 @@ class Machine {
   int get cash => _cash;
   set cash(int value) => _cash;
 
-  // 5. Проверка доступности ресурсов
   bool isAvailable({int b = 50, int w = 100, int m = 0}) {
     return _coffeeBeans >= b && _water >= w && _milk >= m;
   }
 
-  // 6. Закрытый метод уменьшения ресурсов (для эспрессо по умолчанию)
   void _subtractResources({int b = 50, int w = 100, int m = 0}) {
     _coffeeBeans -= b;
     _water -= w;
     _milk -= m;
   }
 
-  // 7. Метод makingCoffee
-  // Возвращает строку с результатом для отображения в UI
   String makingCoffee(String type) {
     int b = 50;
     int w = 100;

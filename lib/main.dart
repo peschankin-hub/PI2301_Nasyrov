@@ -29,7 +29,6 @@ class CoffeeMachinePage extends StatefulWidget {
 }
 
 class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
-  // 8. Создание экземпляра класса
   late Machine machine;
   String statusMessage = "Добро пожаловать!";
 
@@ -76,7 +75,6 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Панель состояния
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -103,7 +101,6 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
             
             const SizedBox(height: 20),
             
-            // Дисплей
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -121,7 +118,6 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
             const Text('ВЫБЕРИТЕ НАПИТОК:', textAlign: TextAlign.center),
             const SizedBox(height: 10),
 
-            // Кнопки напитков
             Row(
               children: [
                 Expanded(child: _coffeeButton("Эспрессо", "50р", () => _buyCoffee("эспрессо"))),
@@ -134,7 +130,6 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
 
             const Spacer(),
             
-            // Сервисные кнопки
             Row(
               children: [
                 Expanded(
