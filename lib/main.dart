@@ -46,22 +46,20 @@ class SelectionScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton.icon(
-              icon: const Icon(Icons.photo_library),
+            ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const PhotoGalleryApp()),
                 );
               },
-              label: const Text('Фотогалерея (Picsum)'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
+              child: const Text('Фотогалерея (Picsum)'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.article),
+            ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green, 
                 foregroundColor: Colors.white,
@@ -73,15 +71,7 @@ class SelectionScreen extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const KubsauNewsApp()),
                 );
               },
-              label: const Text('Новости (SpaceNews)'),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                'Эти API поддерживают CORS и работают в любом браузере.',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
+              child: const Text('Новости (SpaceNews)'),
             ),
           ],
         ),
