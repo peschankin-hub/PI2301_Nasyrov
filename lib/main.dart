@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'classes/machine.dart';
 import 'classes/resources.dart';
 import 'enums.dart';
+import 'pages/coffee_maker_page.dart';
+import 'pages/resources_page.dart';
 
 void main() {
   runApp(const CoffeeApp());
@@ -14,237 +16,101 @@ class CoffeeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Кофемашина',
-      theme: ThemeData(primarySwatch: Colors.brown, useMaterial3: true),
-      home: const CoffeeMachinePage(),
+      theme: ThemeData(
+        primarySwatch: Colors.brown,
+        useMaterial3: true,
+      ),
+      home: const MainContainer(),
     );
   }
 }
 
-class CoffeeMachinePage extends StatefulWidget {
-  const CoffeeMachinePage({super.key});
+class MainContainer extends StatefulWidget {
+  const MainContainer({super.key});
 
   @override
-  State<CoffeeMachinePage> createState() => _CoffeeMachinePageState();
+  State<MainContainer> createState() => _MainContainerState();
 }
 
-class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
+class _MainContainerState extends State<MainContainer> {
   late Machine machine;
-  String statusMessage = "Добро пожаловать!";
 
   @override
   void initState() {
     super.initState();
     machine = Machine(
-      Resources(coffeBeans: 150, milk: 150, water: 300, cash: 0),
+      Resources(coffeBeans: 250, milk: 250, water: 250, cash: 0),
     );
   }
 
-  void _buyCoffee(CoffeeType type) async {
-    setState(() {
-      statusMessage = "Приготовление... Пожалуйста, подождите.";
-    });
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+    );
+  }
 
+  Future<void> _buyCoffee(CoffeeType type) async {
+    _showSnackBar("Начинаю приготовление...");
+    
     String result = await machine.makeCoffeeByType(type);
-
-    setState(() {
-      statusMessage = result;
-    });
+    
+    if (mounted) {
+      setState(() {});
+      _showSnackBar(result);
+    }
   }
 
-  void _fillResources() {
+  void _addMoney(num amount) {
     setState(() {
-      machine.fillResources(beans: 100, milk: 100, water: 200);
-      statusMessage = "Ресурсы пополнены!";
+      machine.fillResources(cash: amount);
     });
+    _showSnackBar("Внесено $amount руб.");
   }
 
-  void _addMoney() {
+  void _fillResources({num beans = 0, num milk = 0, num water = 0, num cash = 0}) {
     setState(() {
-      machine.fillResources(cash: 100);
-      statusMessage = "Баланс пополнен на 100 руб.";
+      machine.fillResources(beans: beans, milk: milk, water: water, cash: cash);
     });
+    _showSnackBar("Ресурсы обновлены");
   }
 
-  void _takeCash() {
+  void _takeChange() {
     num amount = machine.resources.cash;
     setState(() {
       machine.resources.cash = 0;
-      statusMessage = "Вы забрали $amount руб.";
     });
+    _showSnackBar("Ваша сдача: $amount руб.");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Кофемашина - Лаб 11'),
-        backgroundColor: Colors.brown[300],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Кофемашина"),
+          backgroundColor: Colors.brown[300],
+          bottom: const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.coffee)),
+              Tab(icon: Icon(Icons.local_shipping)),
+            ],
+          ),
+        ),
+        body: TabBarView(
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      'СОСТОЯНИЕ РЕСУРСОВ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _statusItem(
-                          "Кофе",
-                          "${machine.resources.coffeBeans}г",
-                          Icons.grain,
-                        ),
-                        _statusItem(
-                          "Вода",
-                          "${machine.resources.water}мл",
-                          Icons.water_drop,
-                        ),
-                        _statusItem(
-                          "Молоко",
-                          "${machine.resources.milk}мл",
-                          Icons.coffee_maker,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Деньги: ${machine.resources.cash} руб.',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            CoffeeMakerPage(
+              machine: machine,
+              onBuy: _buyCoffee,
+              onAddMoney: _addMoney,
+              onTakeChange: _takeChange,
             ),
-
-            const SizedBox(height: 20),
-
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                statusMessage,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 16,
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-            const Text('ВЫБЕРИТЕ НАПИТОК:', textAlign: TextAlign.center),
-            const SizedBox(height: 10),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _coffeeButton(
-                    "Эспрессо",
-                    "50р",
-                    () => _buyCoffee(CoffeeType.espresso),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _coffeeButton(
-                    "Капучино",
-                    "80р",
-                    () => _buyCoffee(CoffeeType.cappuccino),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _coffeeButton(
-                    "Американо",
-                    "60р",
-                    () => _buyCoffee(CoffeeType.americano),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _addMoney,
-              icon: const Icon(Icons.attach_money),
-              label: const Text('Внести 100 руб.'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[50],
-              ),
-            ),
-
-            const Spacer(),
-
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _fillResources,
-                    icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Пополнить ресурсы'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _takeCash,
-                    icon: const Icon(Icons.money_off),
-                    label: const Text('Забрать кассу'),
-                  ),
-                ),
-              ],
+            ResourcesPage(
+              machine: machine,
+              onFill: _fillResources,
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _statusItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.brown),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
-  }
-
-  Widget _coffeeButton(String name, String price, VoidCallback onPressed) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        backgroundColor: Colors.brown[50],
-      ),
-      onPressed: onPressed,
-      child: Column(
-        children: [
-          Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(
-            price,
-            style: const TextStyle(fontSize: 12, color: Colors.brown),
-          ),
-        ],
       ),
     );
   }

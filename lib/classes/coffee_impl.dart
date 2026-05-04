@@ -2,16 +2,22 @@ import 'icoffee.dart';
 import '../async_methods.dart';
 
 class Espresso implements ICoffee {
+  Future<void>? _preparation;
   Espresso._internal();
 
   factory Espresso() {
     var instance = Espresso._internal();
-    instance.prepare(); // Fire and forget as per factory constructor limitation
+    instance.prepare();
     return instance;
   }
 
   @override
   Future<void> prepare() async {
+    _preparation ??= _doPrepare();
+    return _preparation;
+  }
+
+  Future<void> _doPrepare() async {
     print('---------------------------------');
     print('_start_');
     await heatWater();
@@ -31,6 +37,7 @@ class Espresso implements ICoffee {
 }
 
 class Cappuccino implements ICoffee {
+  Future<void>? _preparation;
   Cappuccino._internal();
 
   factory Cappuccino() {
@@ -41,6 +48,11 @@ class Cappuccino implements ICoffee {
 
   @override
   Future<void> prepare() async {
+    _preparation ??= _doPrepare();
+    return _preparation;
+  }
+
+  Future<void> _doPrepare() async {
     print('---------------------------------');
     print('_start_');
     await heatWater();
@@ -61,6 +73,7 @@ class Cappuccino implements ICoffee {
 }
 
 class Americano implements ICoffee {
+  Future<void>? _preparation;
   Americano._internal();
 
   factory Americano() {
@@ -71,6 +84,11 @@ class Americano implements ICoffee {
 
   @override
   Future<void> prepare() async {
+    _preparation ??= _doPrepare();
+    return _preparation;
+  }
+
+  Future<void> _doPrepare() async {
     print('---------------------------------');
     print('_start_');
     await heatWater();
