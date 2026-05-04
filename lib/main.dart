@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'classes/machine.dart';
+import 'classes/resources.dart';
+import 'enums.dart';
 
 void main() {
   runApp(const CoffeeApp());
@@ -36,29 +38,39 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
   void initState() {
     super.initState();
     machine = Machine(
-      coffeeBeans: 150,
-      milk: 150,
-      water: 300,
-      cash: 0,
+      Resources(
+        coffeBeans: 150,
+        milk: 150,
+        water: 300,
+        cash: 0,
+      ),
     );
   }
 
-  void _buyCoffee(String type) {
+  void _buyCoffee(CoffeeType type) {
     setState(() {
-      statusMessage = machine.makingCoffee(type);
+      statusMessage = machine.makeCoffeeByType(type);
     });
   }
 
   void _fillResources() {
     setState(() {
-      machine.addResources(100, 100, 200);
+      machine.fillResources(beans: 100, milk: 100, water: 200);
       statusMessage = "Ресурсы пополнены!";
     });
   }
 
-  void _takeCash() {
-    int amount = machine.resetCash();
+  void _addMoney() {
     setState(() {
+      machine.fillResources(cash: 100);
+      statusMessage = "Баланс пополнен на 100 руб.";
+    });
+  }
+
+  void _takeCash() {
+    num amount = machine.resources.cash;
+    setState(() {
+      machine.resources.cash = 0;
       statusMessage = "Вы забрали $amount руб.";
     });
   }
@@ -86,13 +98,13 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _statusItem("Кофе", "${machine.coffeeBeans}г", Icons.grain),
-                        _statusItem("Вода", "${machine.water}мл", Icons.water_drop),
-                        _statusItem("Молоко", "${machine.milk}мл", Icons.coffee_maker),
+                        _statusItem("Кофе", "${machine.resources.coffeBeans}г", Icons.grain),
+                        _statusItem("Вода", "${machine.resources.water}мл", Icons.water_drop),
+                        _statusItem("Молоко", "${machine.resources.milk}мл", Icons.coffee_maker),
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text('Деньги: ${machine.cash} руб.', 
+                    Text('Деньги: ${machine.resources.cash} руб.', 
                       style: const TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -120,12 +132,20 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
 
             Row(
               children: [
-                Expanded(child: _coffeeButton("Эспрессо", "50р", () => _buyCoffee("эспрессо"))),
+                Expanded(child: _coffeeButton("Эспрессо", "50р", () => _buyCoffee(CoffeeType.espresso))),
                 const SizedBox(width: 8),
-                Expanded(child: _coffeeButton("Капучино", "70р", () => _buyCoffee("капучино"))),
+                Expanded(child: _coffeeButton("Капучино", "80р", () => _buyCoffee(CoffeeType.cappuccino))),
                 const SizedBox(width: 8),
-                Expanded(child: _coffeeButton("Латте", "90р", () => _buyCoffee("латте"))),
+                Expanded(child: _coffeeButton("Американо", "60р", () => _buyCoffee(CoffeeType.americano))),
               ],
+            ),
+
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: _addMoney,
+              icon: const Icon(Icons.attach_money),
+              label: const Text('Внести 100 руб.'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green[50]),
             ),
 
             const Spacer(),
@@ -136,7 +156,7 @@ class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
                   child: ElevatedButton.icon(
                     onPressed: _fillResources,
                     icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Пополнить'),
+                    label: const Text('Пополнить ресурсы'),
                   ),
                 ),
                 const SizedBox(width: 10),

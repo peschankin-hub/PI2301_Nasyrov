@@ -1,85 +1,65 @@
+import 'resources.dart';
+import 'icoffee.dart';
+import '../enums.dart';
+import 'coffee_impl.dart';
+
 class Machine {
-  int _coffeeBeans;
-  int _milk;
-  int _water;
-  int _cash;
+  final Resources _resources;
 
-  Machine({
-    int coffeeBeans = 0,
-    int milk = 0,
-    int water = 0,
-    int cash = 0,
-  })  : _coffeeBeans = coffeeBeans,
-        _milk = milk,
-        _water = water,
-        _cash = cash;
+  Machine(this._resources);
 
-  int get coffeeBeans => _coffeeBeans;
-  set coffeeBeans(int value) => _coffeeBeans = value;
-
-  int get milk => _milk;
-  set milk(int value) => _milk;
-
-  int get water => _water;
-  set water(int value) => _water;
-
-  int get cash => _cash;
-  set cash(int value) => _cash;
-
-  bool isAvailable({int b = 50, int w = 100, int m = 0}) {
-    return _coffeeBeans >= b && _water >= w && _milk >= m;
+  num fillResources({num beans = 0, num milk = 0, num water = 0, num cash = 0}) {
+    _resources.coffeBeans += beans;
+    _resources.milk += milk;
+    _resources.water += water;
+    _resources.cash += cash;
+    return 1;
   }
 
-  void _subtractResources({int b = 50, int w = 100, int m = 0}) {
-    _coffeeBeans -= b;
-    _water -= w;
-    _milk -= m;
-  }
-
-  String makingCoffee(String type) {
-    int b = 50;
-    int w = 100;
-    int m = 0;
-    int price = 0;
-
-    switch (type.toLowerCase()) {
-      case 'эспрессо':
-        price = 50;
+  String makeCoffeeByType(CoffeeType type) {
+    ICoffee coffee;
+    String coffeeName;
+    switch (type) {
+      case CoffeeType.espresso:
+        coffee = Espresso();
+        coffeeName = "Эспрессо";
         break;
-      case 'капучино':
-        m = 50;
-        price = 70;
+      case CoffeeType.cappuccino:
+        coffee = Cappuccino();
+        coffeeName = "Капучино";
         break;
-      case 'латте':
-        m = 100;
-        price = 90;
+      case CoffeeType.americano:
+        coffee = Americano();
+        coffeeName = "Американо";
         break;
-      default:
-        return "Неизвестный тип кофе.";
     }
 
-    if (isAvailable(b: b, w: w, m: m)) {
-      _subtractResources(b: b, w: w, m: m);
-      _cash += price;
-      return "Ваш $type готов!";
+    if (isAvailableResources(coffee)) {
+      _makeCoffee(coffee);
+      return "Ваш $coffeeName готов!";
     } else {
-      String error = "Недостаточно ресурсов:";
-      if (_coffeeBeans < b) error += "\n- Кофе ($bг)";
-      if (_water < w) error += "\n- Вода ($wмл)";
-      if (_milk < m) error += "\n- Молоко ($mмл)";
+      String error = "Недостаточно ресурсов для $coffeeName:";
+      if (_resources.coffeBeans < coffee.coffeBeans()) error += "\n- Кофе";
+      if (_resources.water < coffee.water()) error += "\n- Вода";
+      if (_resources.milk < coffee.milk()) error += "\n- Молоко";
+      if (_resources.cash < coffee.cash()) error += "\n- Деньги";
       return error;
     }
   }
 
-  void addResources(int b, int m, int w) {
-    _coffeeBeans += b;
-    _milk += m;
-    _water += w;
+  bool isAvailableResources(ICoffee coffee) {
+    return _resources.coffeBeans >= coffee.coffeBeans() &&
+        _resources.milk >= coffee.milk() &&
+        _resources.water >= coffee.water() &&
+        _resources.cash >= coffee.cash();
   }
 
-  int resetCash() {
-    int current = _cash;
-    _cash = 0;
-    return current;
+  void _makeCoffee(ICoffee coffee) {
+    _resources.coffeBeans -= coffee.coffeBeans();
+    _resources.milk -= coffee.milk();
+    _resources.water -= coffee.water();
+    _resources.cash -= coffee.cash();
   }
+
+  Resources get resources => _resources;
 }
