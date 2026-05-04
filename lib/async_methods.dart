@@ -19,6 +19,5 @@ Future<void> frothMilk() async {
 }
 
 Future<void> mixCoffeeAndMilk() async {
-  // Task 5: mix coffee and milk (3 seconds delay)
   await Future.delayed(const Duration(seconds: 3));
 }

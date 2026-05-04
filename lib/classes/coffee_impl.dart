@@ -6,7 +6,7 @@ class Espresso implements ICoffee {
 
   factory Espresso() {
     var instance = Espresso._internal();
-    instance.prepare(); // Fire and forget as per factory constructor limitation
+    instance.prepare();
     return instance;
   }
 
