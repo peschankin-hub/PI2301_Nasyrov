@@ -1,93 +1,187 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'photo_gallery.dart';
-import 'kubsau_news.dart';
+import 'classes/machine.dart';
 
 void main() {
-  // Для мобильных устройств оставляем на всякий случай
-  try {
-    HttpOverrides.global = MyHttpOverrides();
-  } catch (e) {
-    // В вебе HttpOverrides не поддерживается, это нормально
-  }
-  runApp(const MainApp());
+  runApp(const CoffeeApp());
 }
 
-// Заглушка для MyHttpOverrides, если она еще используется в kubsau_news.dart
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-  }
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
+class CoffeeApp extends StatelessWidget {
+  const CoffeeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Лабораторная работа (Стабильные API)',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const SelectionScreen(),
+      title: 'Кофемашина',
+      theme: ThemeData(
+        primarySwatch: Colors.brown,
+        useMaterial3: true,
+      ),
+      home: const CoffeeMachinePage(),
     );
   }
 }
 
-class SelectionScreen extends StatelessWidget {
-  const SelectionScreen({Key? key}) : super(key: key);
+class CoffeeMachinePage extends StatefulWidget {
+  const CoffeeMachinePage({super.key});
+
+  @override
+  State<CoffeeMachinePage> createState() => _CoffeeMachinePageState();
+}
+
+class _CoffeeMachinePageState extends State<CoffeeMachinePage> {
+  // 8. Создание экземпляра класса
+  late Machine machine;
+  String statusMessage = "Добро пожаловать!";
+
+  @override
+  void initState() {
+    super.initState();
+    machine = Machine(
+      coffeeBeans: 150,
+      milk: 150,
+      water: 300,
+      cash: 0,
+    );
+  }
+
+  void _buyCoffee(String type) {
+    setState(() {
+      statusMessage = machine.makingCoffee(type);
+    });
+  }
+
+  void _fillResources() {
+    setState(() {
+      machine.addResources(100, 100, 200);
+      statusMessage = "Ресурсы пополнены!";
+    });
+  }
+
+  void _takeCash() {
+    int amount = machine.resetCash();
+    setState(() {
+      statusMessage = "Вы забрали $amount руб.";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Выберите приложение'),
+        title: const Text('Кофемашина - Лаб 9'),
+        backgroundColor: Colors.brown[300],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton.icon(
-              icon: const Icon(Icons.photo_library),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PhotoGalleryApp()),
-                );
-              },
-              label: const Text('Фотогалерея (Picsum)'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            // Панель состояния
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const Text('СОСТОЯНИЕ РЕСУРСОВ', 
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _statusItem("Кофе", "${machine.coffeeBeans}г", Icons.grain),
+                        _statusItem("Вода", "${machine.water}мл", Icons.water_drop),
+                        _statusItem("Молоко", "${machine.milk}мл", Icons.coffee_maker),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text('Деньги: ${machine.cash} руб.', 
+                      style: const TextStyle(fontSize: 18, color: Colors.green, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ),
+            
             const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.article),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green, 
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            
+            // Дисплей
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(10),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const KubsauNewsApp()),
-                );
-              },
-              label: const Text('Новости (SpaceNews)'),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(20.0),
               child: Text(
-                'Эти API поддерживают CORS и работают в любом браузере.',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
+                statusMessage,
                 textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.greenAccent, fontSize: 16, fontFamily: 'monospace'),
               ),
+            ),
+
+            const SizedBox(height: 30),
+            const Text('ВЫБЕРИТЕ НАПИТОК:', textAlign: TextAlign.center),
+            const SizedBox(height: 10),
+
+            // Кнопки напитков
+            Row(
+              children: [
+                Expanded(child: _coffeeButton("Эспрессо", "50р", () => _buyCoffee("эспрессо"))),
+                const SizedBox(width: 8),
+                Expanded(child: _coffeeButton("Капучино", "70р", () => _buyCoffee("капучино"))),
+                const SizedBox(width: 8),
+                Expanded(child: _coffeeButton("Латте", "90р", () => _buyCoffee("латте"))),
+              ],
+            ),
+
+            const Spacer(),
+            
+            // Сервисные кнопки
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _fillResources,
+                    icon: const Icon(Icons.add_circle_outline),
+                    label: const Text('Пополнить'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _takeCash,
+                    icon: const Icon(Icons.money_off),
+                    label: const Text('Забрать кассу'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _statusItem(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.brown),
+        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      ],
+    );
+  }
+
+  Widget _coffeeButton(String name, String price, VoidCallback onPressed) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        backgroundColor: Colors.brown[50],
+      ),
+      onPressed: onPressed,
+      child: Column(
+        children: [
+          Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(price, style: const TextStyle(fontSize: 12, color: Colors.brown)),
+        ],
       ),
     );
   }
