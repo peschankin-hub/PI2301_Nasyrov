@@ -4,16 +4,13 @@ import 'photo_gallery.dart';
 import 'kubsau_news.dart';
 
 void main() {
-  // Для мобильных устройств оставляем на всякий случай
   try {
     HttpOverrides.global = MyHttpOverrides();
   } catch (e) {
-    // В вебе HttpOverrides не поддерживается, это нормально
   }
   runApp(const MainApp());
 }
 
-// Заглушка для MyHttpOverrides, если она еще используется в kubsau_news.dart
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Photo>> fetchPhotos(http.Client client) async {
-  // Используем Picsum API - он очень стабилен и поддерживает CORS
   final response = await client.get(Uri.parse('https://picsum.photos/v2/list?limit=50'));
   return compute(parsePhotos, response.body);
 }
@@ -33,7 +32,6 @@ class Photo {
       id: json['id'] as String,
       author: json['author'] as String,
       url: json['url'] as String,
-      // Используем уменьшенную версию изображения для сетки
       downloadUrl: 'https://picsum.photos/id/${json['id']}/300/300',
     );
   }

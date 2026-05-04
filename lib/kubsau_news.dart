@@ -29,7 +29,6 @@ class News {
 
 Future<List<News>> fetchNews() async {
   try {
-    // Используем Spaceflight News API - отличный аналог, работает везде
     final response = await http.get(
       Uri.parse('https://api.spaceflightnewsapi.net/v4/articles/?limit=10'),
     ).timeout(const Duration(seconds: 15));
@@ -125,7 +124,7 @@ class _NewsListPageState extends State<NewsListPage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                news.publishedAt.split('T')[0], // Упрощаем дату
+                                news.publishedAt.split('T')[0], 
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 12,
