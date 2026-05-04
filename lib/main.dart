@@ -38,6 +38,58 @@ class _DormitoryScreenState extends State<DormitoryScreen> {
     });
   }
 
+  void _showDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showRepostDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Репост'),
+          content: const Text(
+            'Вы хотите поделиться этой записью на своей странице?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('ОТМЕНА'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('РЕПОСТ'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Запись добавлена на вашу стену!'),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const String descriptionText =
@@ -108,9 +160,15 @@ class _DormitoryScreenState extends State<DormitoryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildButtonColumn(Colors.green, Icons.call, 'ПОЗВОНИТЬ'),
-              _buildButtonColumn(Colors.green, Icons.near_me, 'МАРШРУТ'),
-              _buildButtonColumn(Colors.green, Icons.share, 'ПОДЕЛИТЬСЯ'),
+              _buildButtonColumn(Colors.green, Icons.call, 'ПОЗВОНИТЬ', () {
+                _showDialog(context, 'Наш номер телефна: +79180009911');
+              }),
+              _buildButtonColumn(Colors.green, Icons.near_me, 'МАРШРУТ', () {
+                _showDialog(context, 'Наш адрес: Краснодар, ул. Калинина, 13');
+              }),
+              _buildButtonColumn(Colors.green, Icons.share, 'ПОДЕЛИТЬСЯ', () {
+                _showRepostDialog(context);
+              }),
             ],
           ),
 
@@ -123,16 +181,19 @@ class _DormitoryScreenState extends State<DormitoryScreen> {
     );
   }
 
-  Column _buildButtonColumn(Color color, IconData icon, String label) {
+  Column _buildButtonColumn(
+    Color color,
+    IconData icon,
+    String label,
+    VoidCallback onPressed,
+  ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
           icon: Icon(icon, color: color),
-          onPressed: () {
-            print('Нажата кнопка: $label');
-          },
+          onPressed: onPressed,
         ),
         Container(
           margin: const EdgeInsets.only(top: 8),
